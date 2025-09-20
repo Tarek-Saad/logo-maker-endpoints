@@ -1,0 +1,64 @@
+{
+  "name": "express-starter-db-storage",
+  "version": "1.0.0",
+  "description": "🚀 Complete Express.js starter with PostgreSQL database and Cloudinary storage - Ready for production deployment",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js",
+    "init-db": "node scripts/init-db.js",
+    "build": "echo 'No build step required'",
+    "vercel-build": "echo 'No build step required'",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linter configured'",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "logs": "vercel logs",
+    "env:add": "vercel env add",
+    "env:ls": "vercel env ls"
+  },
+  "keywords": [
+    "express",
+    "postgresql",
+    "cloudinary",
+    "api",
+    "nodejs",
+    "starter",
+    "template",
+    "database",
+    "storage",
+    "vercel",
+    "production-ready",
+    "backend",
+    "rest-api",
+    "crud",
+    "file-upload"
+  ],
+  "author": "Your Name <your.email@example.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/express-starter-db-storage.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/express-starter-db-storage/issues"
+  },
+  "homepage": "https://github.com/yourusername/express-starter-db-storage#readme",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "morgan": "^1.10.0",
+    "pg": "^8.11.3",
+    "cloudinary": "^1.41.0",
+    "multer": "^1.4.5-lts.1",
+    "multer-storage-cloudinary": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
