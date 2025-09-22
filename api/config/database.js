@@ -27,6 +27,11 @@ const initializeDatabase = async () => {
   try {
     const client = await pool.connect();
     
+    // Enable uuid extension for UUID generation
+    await client.query(`
+      CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    `);
+
     // Create users table
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
@@ -52,9 +57,25 @@ const initializeDatabase = async () => {
       )
     `);
 
+    // Create logos table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS logos (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        name VARCHAR(255) NOT NULL,
+        url TEXT NOT NULL,
+        coordinates JSONB,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     // Create index for better performance
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_posts_author_id ON posts(author_id);
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_logos_created_at ON logos(created_at);
     `);
 
     // Create function to update updated_at timestamp
@@ -81,6 +102,14 @@ const initializeDatabase = async () => {
       DROP TRIGGER IF EXISTS update_posts_updated_at ON posts;
       CREATE TRIGGER update_posts_updated_at
         BEFORE UPDATE ON posts
+        FOR EACH ROW
+        EXECUTE FUNCTION update_updated_at_column();
+    `);
+
+    await client.query(`
+      DROP TRIGGER IF EXISTS update_logos_updated_at ON logos;
+      CREATE TRIGGER update_logos_updated_at
+        BEFORE UPDATE ON logos
         FOR EACH ROW
         EXECUTE FUNCTION update_updated_at_column();
     `);
