@@ -1,3 +1,124 @@
+# Logo Maker API
+
+This is the backend for the Logo Maker app. It serves logos and their render layers, each linked to an asset. Use these endpoints from your frontend to render and manage logos.
+
+## Base URLs
+- Local: `http://localhost:3000`
+- Production: `https://your-app.vercel.app`
+
+## Auth
+- No authentication required (you can add later if needed).
+
+## Environment Variables
+- `DATABASE_URL` (required)
+- `CLOUDINARY_*` (optional, only if using upload endpoints):
+  - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+
+## Data Model (simplified)
+- `logos`: `{ id: UUID, title: string, created_at, updated_at }`
+- `assets`: `{ id: UUID, url: string, default_x, default_y, default_scale, default_rotation, created_at, updated_at }`
+- `logo_layers`: `{ id: UUID, logo_id: UUID, asset_id: UUID, x_norm: number, y_norm: number, scale: number, rotation: number, z_index: number, created_at, updated_at }`
+
+## Endpoints
+
+### Get a logo with its layers and asset data
+GET `/api/logo/:id`
+
+Response example:
+```json
+{
+  "success": true,
+  "data": {
+    "id": "ba2b822e-70ea-4e6c-8c1d-9d1a12345678",
+    "title": "My Logo",
+    "created_at": "2025-09-20T12:34:56.000Z",
+    "updated_at": "2025-09-21T08:15:30.000Z",
+    "layers": [
+      {
+        "id": "9c0e2b3a-1d4b-4b2e-9b0a-abc123",
+        "logo_id": "ba2b822e-70ea-4e6c-8c1d-9d1a12345678",
+        "asset_id": "3a9f1e2c-7d4e-4f2b-9c1a-asset111",
+        "x_norm": 0.52,
+        "y_norm": 0.41,
+        "scale": 1.1,
+        "rotation": 0,
+        "z_index": 0,
+        "created_at": "2025-09-20T12:35:10.000Z",
+        "updated_at": "2025-09-20T12:35:10.000Z",
+        "asset": {
+          "id": "3a9f1e2c-7d4e-4f2b-9c1a-asset111",
+          "url": "https://res.cloudinary.com/demo/image/upload/sample.png",
+          "default_x": 0.5,
+          "default_y": 0.5,
+          "default_scale": 1,
+          "default_rotation": 0,
+          "created_at": "2025-09-18T10:00:00.000Z",
+          "updated_at": "2025-09-18T10:00:00.000Z"
+        }
+      }
+    ]
+  }
+}
+```
+
+Front-end usage sketch (React):
+```tsx
+// Fetch
+const res = await fetch(`/api/logo/${logoId}`);
+const { data } = await res.json();
+
+// Render
+return (
+  <Canvas>
+    {data.layers.map(layer => (
+      <Sprite
+        key={layer.id}
+        src={layer.asset.url}
+        x={layer.x_norm}
+        y={layer.y_norm}
+        scale={layer.scale}
+        rotation={layer.rotation}
+        zIndex={layer.z_index}
+      />
+    ))}
+  </Canvas>
+);
+```
+
+Notes for rendering:
+- `x_norm`, `y_norm` are normalized coordinates in [0, 1]. Multiply by canvas width/height to get pixels.
+- Use `z_index` for stacking order.
+- Fallback to asset defaults when a layer value is missing (e.g., initial placement).
+
+### List logos
+GET `/api/logos`
+
+Response example:
+```json
+{
+  "success": true,
+  "data": [
+    { "id": "ba2b822e-...", "title": "My Logo", "created_at": "...", "updated_at": "..." }
+  ]
+}
+```
+
+### Upload image (optional)
+POST `/api/upload/image`
+- multipart form-data: `image` file
+
+Response example:
+```json
+{
+  "success": true,
+  "data": {
+    "public_id": "starter-project/abc123",
+    "secure_url": "https://res.cloudinary.com/.../image/upload/v.../abc123.png"
+  }
+}
+```
+
+---
 # 🚀 Express.js Starter with Database & Storage
 
 > **The Ultimate Backend Starter Template** - Ready-to-deploy Express.js API with PostgreSQL database and Cloudinary storage integration.
