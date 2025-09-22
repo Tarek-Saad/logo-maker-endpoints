@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { query } = require('../config/database');
+const { query, getClient } = require('../config/database');
 
 // GET /api/logo/:id - Get logo by ID with layers (including asset data)
 router.get('/:id', async (req, res) => {
@@ -111,6 +111,96 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting logo:', error);
     res.status(500).json({ success: false, message: 'Failed to delete logo' });
+  }
+});
+
+// POST /api/logo - Create logo with layers and assets
+router.post('/', async (req, res) => {
+  const client = await getClient();
+  try {
+    const { title, layers } = req.body;
+
+    if (!title) {
+      client.release();
+      return res.status(400).json({ success: false, message: 'title is required' });
+    }
+
+    await client.query('BEGIN');
+
+    // Create logo
+    const logoRes = await client.query(
+      'INSERT INTO logos (title) VALUES ($1) RETURNING id, title, created_at, updated_at',
+      [title]
+    );
+    const logo = logoRes.rows[0];
+
+    const createdLayers = [];
+
+    if (Array.isArray(layers)) {
+      for (const layer of layers) {
+        // Ensure asset exists (create if url provided without id)
+        let assetId = layer.asset_id;
+        let assetObj = null;
+
+        if (!assetId && layer.asset && layer.asset.url) {
+          const a = layer.asset;
+          const assetRes = await client.query(
+            `INSERT INTO assets (url, default_x, default_y, default_scale, default_rotation)
+             VALUES ($1, $2, $3, $4, $5)
+             RETURNING id, url, default_x, default_y, default_scale, default_rotation, created_at, updated_at`,
+            [a.url, a.default_x ?? 0.5, a.default_y ?? 0.5, a.default_scale ?? 1, a.default_rotation ?? 0]
+          );
+          assetObj = assetRes.rows[0];
+          assetId = assetObj.id;
+        } else if (assetId) {
+          const assetRes = await client.query(
+            `SELECT id, url, default_x, default_y, default_scale, default_rotation, created_at, updated_at
+             FROM assets WHERE id = $1`,
+            [assetId]
+          );
+          assetObj = assetRes.rows[0] || null;
+          if (!assetObj) {
+            throw new Error('Provided asset_id does not exist');
+          }
+        } else {
+          throw new Error('Each layer must include asset_id or asset.url');
+        }
+
+        const x = layer.x_norm;
+        const y = layer.y_norm;
+        if (typeof x !== 'number' || typeof y !== 'number') {
+          throw new Error('Layer requires numeric x_norm and y_norm');
+        }
+
+        const layerRes = await client.query(
+          `INSERT INTO logo_layers (logo_id, asset_id, x_norm, y_norm, scale, rotation, z_index)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)
+           RETURNING id, logo_id, asset_id, x_norm, y_norm, scale, rotation, z_index, created_at, updated_at`,
+          [logo.id, assetId, x, y, layer.scale ?? 1, layer.rotation ?? 0, layer.z_index ?? 0]
+        );
+
+        createdLayers.push({
+          ...layerRes.rows[0],
+          asset: assetObj
+        });
+      }
+    }
+
+    await client.query('COMMIT');
+
+    return res.status(201).json({
+      success: true,
+      data: {
+        ...logo,
+        layers: createdLayers
+      }
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error creating logo with layers:', error);
+    res.status(500).json({ success: false, message: error.message || 'Failed to create logo' });
+  } finally {
+    client.release();
   }
 });
 
