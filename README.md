@@ -147,7 +147,7 @@ This starter template provides everything you need to build a production-ready b
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/yourusername/express-starter-db-storage.git
+git clone https://github.com/Tarek-Saad/logo-maker-endpoints
 cd express-starter-db-storage
 npm install
 ```
@@ -461,7 +461,7 @@ Consistent error responses:
 
 ### Getting Help
 
-1. Check the [Issues](https://github.com/yourusername/express-starter-db-storage/issues) page
+1. Check the [Issues](https://github.com/Tarek-Saad/logo-maker-endpoints/issues) page
 2. Create a new issue with:
    - Error message
    - Steps to reproduce
