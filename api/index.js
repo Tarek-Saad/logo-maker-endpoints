@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.get('/', (req, res) => {
   res.json({
-    message: 'Welcome to Express Starter API',
+    message: 'Welcome to LOGO Maker API',
     version: '1.0.0',
     status: 'running',
     timestamp: new Date().toISOString()
