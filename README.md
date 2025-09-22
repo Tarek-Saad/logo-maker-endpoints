@@ -4,7 +4,7 @@ This is the backend for the Logo Maker app. It serves logos and their render lay
 
 ## Base URLs
 - Local: `http://localhost:3000`
-- Production: `https://your-app.vercel.app`
+- Production: `https://logo-maker-endpoints.vercel.app`
 
 ## Auth
 - No authentication required (you can add later if needed).
@@ -123,7 +123,7 @@ Response example:
 
 > **The Ultimate Backend Starter Template** - Ready-to-deploy Express.js API with PostgreSQL database and Cloudinary storage integration.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/yourusername/express-starter-db-storage)
+[![Deploy with Vercel](https://vercel.com/button)](https://logo-maker-endpoints.vercel.app)
 [![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
 [![Express.js](https://img.shields.io/badge/Express.js-4.18.2-000000)](https://expressjs.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192-blue)](https://postgresql.org/)
@@ -498,10 +498,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-- 📧 **Email**: support@yourdomain.com
-- 💬 **Discord**: [Join our community](https://discord.gg/your-server)
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/express-starter-db-storage/issues)
-- 📖 **Docs**: [Full Documentation](https://docs.yourdomain.com)
+- 📧 **Email**: tareksaad.dev@gmail.com
+- 💬 **Discord**: [Join our community](https://discord.gg/sateenGD)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Tarek-Saad/logo-maker-endpoints/issues)
 
 ---
 
@@ -509,7 +508,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **⭐ Star this repo if you found it helpful!**
 
-Made with ❤️ by [Your Name](https://github.com/yourusername)
+Made with ❤️ by Tarek (https://github.com/Tarek-Saad)
 
 [⬆ Back to Top](#-expressjs-starter-with-database--storage)
 
