@@ -1,0 +1,458 @@
+{
+    "info": {
+      "name": "Express Backend Starter API",
+      "_postman_id": "c0ffee00-0000-4c0l-lect-000000starter",
+      "description": "Express.js + PostgreSQL (Neon) + Cloudinary starter. Set {{base_url}} to prod/local. Includes health, users, posts, upload routes with sample bodies and basic tests.",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+      {
+        "key": "base_url",
+        "value": "https://starter-backend-project-o9ow73aj8-tarek-saads-projects.vercel.app",
+        "type": "string"
+      },
+      { "key": "page", "value": "1" },
+      { "key": "limit", "value": "10" },
+      { "key": "search", "value": "" },
+      { "key": "psearch", "value": "" },
+      { "key": "author", "value": "" },
+      { "key": "width", "value": "300" },
+      { "key": "height", "value": "200" },
+      { "key": "crop", "value": "fill" },
+      { "key": "quality", "value": "auto" }
+    ],
+    "item": [
+      {
+        "name": "🏥 Health",
+        "item": [
+          {
+            "name": "GET /",
+            "request": {
+              "method": "GET",
+              "url": { "raw": "{{base_url}}/", "host": ["{{base_url}}"], "path": [""] }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                    "pm.test('JSON or text', () => pm.expect(['application/json','text/plain']).to.include(pm.response.headers.get('Content-Type')?.split(';')[0]));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "GET /health",
+            "request": {
+              "method": "GET",
+              "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                    "let j; try { j = pm.response.json(); } catch(e) { j = {}; }",
+                    "pm.test('Has uptime', () => pm.expect(j).to.have.property('uptime'));"
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "👥 Users",
+        "item": [
+          {
+            "name": "GET /api/users (list)",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{base_url}}/api/users?page={{page}}&limit={{limit}}&search={{search}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "users"],
+                "query": [
+                  { "key": "page", "value": "{{page}}", "description": "default 1" },
+                  { "key": "limit", "value": "{{limit}}", "description": "default 10" },
+                  { "key": "search", "value": "{{search}}", "description": "name or email" }
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                    "let j = pm.response.json();",
+                    "pm.test('Has data array', () => pm.expect(j.data).to.be.an('array'));",
+                    "pm.test('Has pagination', () => pm.expect(j).to.have.property('pagination'));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "GET /api/users/:id",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{base_url}}/api/users/:id",
+                "host": ["{{base_url}}"],
+                "path": ["api", "users", ":id"],
+                "variable": [{ "key": "id", "value": "1" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200 or 404', () => pm.expect([200,404]).to.include(pm.response.code));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "POST /api/users",
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"avatar_url\": \"https://example.com/avatar.jpg\"\n}"
+              },
+              "url": { "raw": "{{base_url}}/api/users", "host": ["{{base_url}}"], "path": ["api", "users"] }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Created 201', () => pm.expect([200,201]).to.include(pm.response.code));",
+                    "let j = pm.response.json();",
+                    "pm.test('Has id', () => pm.expect(j.data || j).to.have.property('id'));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "PUT /api/users/:id",
+            "request": {
+              "method": "PUT",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"name\": \"John Updated\",\n  \"email\": \"john.updated@example.com\",\n  \"avatar_url\": \"https://example.com/new.jpg\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/users/:id",
+                "host": ["{{base_url}}"],
+                "path": ["api", "users", ":id"],
+                "variable": [{ "key": "id", "value": "1" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                    "pm.test('Updated object returned', () => pm.expect(pm.response.json()).to.be.an('object'));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "DELETE /api/users/:id",
+            "request": {
+              "method": "DELETE",
+              "url": {
+                "raw": "{{base_url}}/api/users/:id",
+                "host": ["{{base_url}}"],
+                "path": ["api", "users", ":id"],
+                "variable": [{ "key": "id", "value": "1" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200/204/404', () => pm.expect([200,204,404]).to.include(pm.response.code));"
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "📝 Posts",
+        "item": [
+          {
+            "name": "GET /api/posts (list)",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{base_url}}/api/posts?page={{page}}&limit={{limit}}&search={{psearch}}&author={{author}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "posts"],
+                "query": [
+                  { "key": "page", "value": "{{page}}" },
+                  { "key": "limit", "value": "{{limit}}" },
+                  { "key": "search", "value": "{{psearch}}", "description": "title or content" },
+                  { "key": "author", "value": "{{author}}", "description": "author name filter" }
+                ]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                    "pm.test('Array data', () => pm.expect(pm.response.json().data).to.be.an('array'));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "GET /api/posts/:id",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{base_url}}/api/posts/:id",
+                "host": ["{{base_url}}"],
+                "path": ["api", "posts", ":id"],
+                "variable": [{ "key": "id", "value": "1" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200 or 404', () => pm.expect([200,404]).to.include(pm.response.code));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "POST /api/posts",
+            "request": {
+              "method": "POST",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"title\": \"My First Post\",\n  \"content\": \"This is the content of my post\",\n  \"author_id\": 1,\n  \"image_url\": \"https://example.com/image.jpg\"\n}"
+              },
+              "url": { "raw": "{{base_url}}/api/posts", "host": ["{{base_url}}"], "path": ["api", "posts"] }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('201/200', () => pm.expect([200,201]).to.include(pm.response.code));",
+                    "pm.test('Has id', () => pm.expect(pm.response.json().data || {}).to.have.property('id'));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "PUT /api/posts/:id",
+            "request": {
+              "method": "PUT",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": {
+                "mode": "raw",
+                "raw": "{\n  \"title\": \"Updated Title\",\n  \"content\": \"Updated content\",\n  \"author_id\": 1,\n  \"image_url\": \"https://example.com/new.jpg\"\n}"
+              },
+              "url": {
+                "raw": "{{base_url}}/api/posts/:id",
+                "host": ["{{base_url}}"],
+                "path": ["api", "posts", ":id"],
+                "variable": [{ "key": "id", "value": "1" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200 OK', () => pm.response.to.have.status(200));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "DELETE /api/posts/:id",
+            "request": {
+              "method": "DELETE",
+              "url": {
+                "raw": "{{base_url}}/api/posts/:id",
+                "host": ["{{base_url}}"],
+                "path": ["api", "posts", ":id"],
+                "variable": [{ "key": "id", "value": "1" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200/204/404', () => pm.expect([200,204,404]).to.include(pm.response.code));"
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "📁 Upload",
+        "item": [
+          {
+            "name": "POST /api/upload/image (single)",
+            "request": {
+              "method": "POST",
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  { "key": "image", "type": "file", "src": ["/absolute/path/to/image.jpg"] }
+                ]
+              },
+              "url": {
+                "raw": "{{base_url}}/api/upload/image",
+                "host": ["{{base_url}}"],
+                "path": ["api", "upload", "image"]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('201/200', () => pm.expect([200,201]).to.include(pm.response.code));",
+                    "let j; try { j = pm.response.json(); } catch(e) { j = {}; }",
+                    "pm.test('Has url/public_id', () => pm.expect(j).to.satisfy(o => !!(o.url || (o.data && (o.data.url || o.data.public_id)))));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "POST /api/upload/images (multiple)",
+            "request": {
+              "method": "POST",
+              "body": {
+                "mode": "formdata",
+                "formdata": [
+                  { "key": "images", "type": "file", "src": ["/absolute/path/to/image1.jpg"] },
+                  { "key": "images", "type": "file", "src": ["/absolute/path/to/image2.jpg"] }
+                ]
+              },
+              "url": {
+                "raw": "{{base_url}}/api/upload/images",
+                "host": ["{{base_url}}"],
+                "path": ["api", "upload", "images"]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('201/200', () => pm.expect([200,201]).to.include(pm.response.code));",
+                    "let j = pm.response.json();",
+                    "pm.test('Array of results', () => pm.expect(j.data || j).to.be.an('array'));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "DELETE /api/upload/image/:id",
+            "request": {
+              "method": "DELETE",
+              "url": {
+                "raw": "{{base_url}}/api/upload/image/:id",
+                "host": ["{{base_url}}"],
+                "path": ["api", "upload", "image", ":id"],
+                "variable": [{ "key": "id", "value": "public_id_or_db_id" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200/204/404', () => pm.expect([200,204,404]).to.include(pm.response.code));"
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "name": "GET /api/upload/image/:id/url (transform)",
+            "request": {
+              "method": "GET",
+              "url": {
+                "raw": "{{base_url}}/api/upload/image/:id/url?width={{width}}&height={{height}}&crop={{crop}}&quality={{quality}}",
+                "host": ["{{base_url}}"],
+                "path": ["api", "upload", "image", ":id", "url"],
+                "query": [
+                  { "key": "width", "value": "{{width}}" },
+                  { "key": "height", "value": "{{height}}" },
+                  { "key": "crop", "value": "{{crop}}" },
+                  { "key": "quality", "value": "{{quality}}" }
+                ],
+                "variable": [{ "key": "id", "value": "public_id_or_db_id" }]
+              }
+            },
+            "event": [
+              {
+                "listen": "test",
+                "script": {
+                  "type": "text/javascript",
+                  "exec": [
+                    "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                    "let j = pm.response.json();",
+                    "pm.test('Has url', () => pm.expect(j.url || (j.data && j.data.url)).to.exist);"
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+  
