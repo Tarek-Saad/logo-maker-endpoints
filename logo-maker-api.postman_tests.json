@@ -1,0 +1,618 @@
+{
+  "info": {
+    "name": "Logo Maker API - Test Suite",
+    "description": "Comprehensive test suite for Logo Maker API endpoints",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🧪 Health Check Tests",
+      "item": [
+        {
+          "name": "Health Check - Server Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{serverUrl}}/health",
+              "host": ["{{serverUrl}}"],
+              "path": ["health"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Health check returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has status field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('status');",
+                  "});",
+                  "",
+                  "pm.test('Response has uptime field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('uptime');",
+                  "});",
+                  "",
+                  "pm.test('Response time is less than 1000ms', function () {",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🎨 Logo Management Tests",
+      "item": [
+        {
+          "name": "Create Logo - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"owner_id\": \"{{userId}}\",\n  \"title\": \"Test Logo\",\n  \"canvas_w\": {{canvasWidth}},\n  \"canvas_h\": {{canvasHeight}},\n  \"dpi\": {{dpi}},\n  \"is_template\": false,\n  \"layers\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logo",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Create logo returns 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has data field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "});",
+                  "",
+                  "pm.test('Logo has required fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const logo = jsonData.data;",
+                  "    pm.expect(logo).to.have.property('id');",
+                  "    pm.expect(logo).to.have.property('title');",
+                  "    pm.expect(logo).to.have.property('canvas_w');",
+                  "    pm.expect(logo).to.have.property('canvas_h');",
+                  "    pm.expect(logo).to.have.property('layers');",
+                  "});",
+                  "",
+                  "pm.test('Set logo ID variable', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('logoId', jsonData.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Logo - Success",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get logo returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Logo ID matches request', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.id).to.eql(pm.collectionVariables.get('logoId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Logo - Success",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Test Logo\",\n  \"canvas_w\": 1920,\n  \"canvas_h\": 1080\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Update logo returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Title was updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.title).to.eql('Updated Test Logo');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🔧 Layer Management Tests",
+      "item": [
+        {
+          "name": "Create Text Layer - Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"logo_id\": \"{{logoId}}\",\n  \"type\": \"TEXT\",\n  \"name\": \"Test Text Layer\",\n  \"z_index\": 1,\n  \"x_norm\": {{xNorm}},\n  \"y_norm\": {{yNorm}},\n  \"scale\": {{scale}},\n  \"rotation_deg\": {{rotation}},\n  \"anchor_x\": {{anchorX}},\n  \"anchor_y\": {{anchorY}},\n  \"opacity\": {{opacity}},\n  \"blend_mode\": \"{{blendMode}}\",\n  \"is_visible\": {{isVisible}},\n  \"is_locked\": {{isLocked}},\n  \"text\": {\n    \"content\": \"Test Text\",\n    \"font_size\": {{fontSize}},\n    \"fill_hex\": \"{{fillColor}}\",\n    \"stroke_hex\": \"{{strokeColor}}\",\n    \"stroke_width\": {{strokeWidth}},\n    \"align\": \"{{textAlign}}\",\n    \"baseline\": \"{{textBaseline}}\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Create layer returns 201', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Layer has required fields', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    const layer = jsonData.data;",
+                  "    pm.expect(layer).to.have.property('id');",
+                  "    pm.expect(layer).to.have.property('type');",
+                  "    pm.expect(layer).to.have.property('name');",
+                  "    pm.expect(layer.type).to.eql('TEXT');",
+                  "});",
+                  "",
+                  "pm.test('Set layer ID variable', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.collectionVariables.set('layerId', jsonData.data.id);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Layer Properties - Success",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"x_norm\": 0.6,\n  \"y_norm\": 0.4,\n  \"scale\": 1.2,\n  \"rotation_deg\": 15,\n  \"opacity\": 0.8,\n  \"is_visible\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Update layer returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Position was updated', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.data.x_norm).to.eql(0.6);",
+                  "    pm.expect(jsonData.data.y_norm).to.eql(0.4);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📁 Asset Management Tests",
+      "item": [
+        {
+          "name": "Get Assets - Success",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets?kind={{kind}}&page={{page}}&limit={{limit}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets"],
+              "query": [
+                {
+                  "key": "kind",
+                  "value": "{{kind}}"
+                },
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get assets returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has data array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📋 Template Management Tests",
+      "item": [
+        {
+          "name": "Get Templates - Success",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates?page={{page}}&limit={{limit}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{page}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "{{limit}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Get templates returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response has success field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('success');",
+                  "    pm.expect(jsonData.success).to.be.true;",
+                  "});",
+                  "",
+                  "pm.test('Response has data array', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('data');",
+                  "    pm.expect(jsonData.data).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📤 Export Tests",
+      "item": [
+        {
+          "name": "Export PNG - Success",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}/export.png?width={{exportWidth}}&height={{exportHeight}}&dpi={{dpi}}&quality={{quality}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}", "export.png"],
+              "query": [
+                {
+                  "key": "width",
+                  "value": "{{exportWidth}}"
+                },
+                {
+                  "key": "height",
+                  "value": "{{exportHeight}}"
+                },
+                {
+                  "key": "dpi",
+                  "value": "{{dpi}}"
+                },
+                {
+                  "key": "quality",
+                  "value": "{{quality}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Export PNG returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is PNG image', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png');",
+                  "});",
+                  "",
+                  "pm.test('Response has content', function () {",
+                  "    pm.expect(pm.response.responseSize).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Export SVG - Success",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}/export.svg?width={{exportWidth}}&height={{exportHeight}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}", "export.svg"],
+              "query": [
+                {
+                  "key": "width",
+                  "value": "{{exportWidth}}"
+                },
+                {
+                  "key": "height",
+                  "value": "{{exportHeight}}"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Export SVG returns 200', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is SVG', function () {",
+                  "    pm.expect(pm.response.headers.get('Content-Type')).to.include('image/svg+xml');",
+                  "});",
+                  "",
+                  "pm.test('Response contains SVG content', function () {",
+                  "    pm.expect(pm.response.text()).to.include('<svg');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "❌ Error Handling Tests",
+      "item": [
+        {
+          "name": "Get Non-existent Logo - 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "00000000-0000-0000-0000-000000000000"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Non-existent logo returns 404', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});",
+                  "",
+                  "pm.test('Response has error field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Logo - Invalid Data - 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"canvas_w\": -100,\n  \"canvas_h\": -100\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logo",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Invalid data returns 400', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});",
+                  "",
+                  "pm.test('Response has error field', function () {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.expect(jsonData).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global pre-request script",
+          "console.log('Running test for:', pm.info.requestName);",
+          "",
+          "// Set default values if not already set",
+          "if (!pm.collectionVariables.get('baseUrl')) {",
+          "    pm.collectionVariables.set('baseUrl', 'http://localhost:3000/api');",
+          "}",
+          "if (!pm.collectionVariables.get('serverUrl')) {",
+          "    pm.collectionVariables.set('serverUrl', 'http://localhost:3000');",
+          "}",
+          "if (!pm.collectionVariables.get('userId')) {",
+          "    pm.collectionVariables.set('userId', '550e8400-e29b-41d4-a716-446655440000');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script",
+          "pm.test('Response time is reasonable', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(10000);",
+          "});",
+          "",
+          "pm.test('Response has valid JSON', function () {",
+          "    if (pm.response.headers.get('Content-Type') && pm.response.headers.get('Content-Type').includes('application/json')) {",
+          "        pm.expect(() => pm.response.json()).to.not.throw();",
+          "    }",
+          "});",
+          "",
+          "pm.test('No server errors', function () {",
+          "    pm.expect(pm.response.code).to.not.be.oneOf([500, 502, 503, 504]);",
+          "});"
+        ]
+      }
+    }
+  ]
+}

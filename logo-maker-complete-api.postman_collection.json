@@ -1,0 +1,1048 @@
+{
+  "info": {
+    "name": "Logo Maker API - Complete Documentation",
+    "description": "🚀 **Complete Logo Maker API Documentation**\n\n## Overview\nThis collection contains all endpoints for the comprehensive Logo Maker API with advanced layer management, template system, asset management, and export functionality.\n\n## Features\n- **Multi-layer Logo Creation**: Background, Text, Shape, Icon, Image layers\n- **Template System**: Categories, templates, and inheritance\n- **Asset Management**: Cloudinary integration for all file types\n- **Version Control**: Snapshot-based undo/redo system\n- **Export Options**: PNG and SVG export with customizable dimensions\n- **Advanced Layer Properties**: Position, scale, rotation, opacity, blend modes, shadows\n\n## Base URL\n`{{baseUrl}}` (default: http://localhost:3000/api)\n\n## Authentication\nCurrently no authentication required. In production, add JWT or session-based auth.\n\n## Database Schema\n- **Users**: User accounts and profiles\n- **Assets**: Files (images, SVGs, fonts) with Cloudinary integration\n- **Logos**: Logo projects with canvas dimensions\n- **Layers**: Logo layers with common properties\n- **Layer Types**: Text, Shape, Icon, Image, Background with specialized properties\n- **Templates**: Reusable logo templates with categories\n- **Versions**: Logo version history with JSON snapshots\n\n## Coordinate System\nAll coordinates are normalized (0-1) relative to canvas:\n- `x_norm`, `y_norm`: Position (0,0 = top-left, 1,1 = bottom-right)\n- `anchor_x`, `anchor_y`: Anchor point (0.5,0.5 = center)\n- `scale`: Scale factor (1.0 = original size)\n- `rotation_deg`: Rotation in degrees\n- `opacity`: Opacity (0-1)\n\n## Layer Types\n- **BACKGROUND**: Solid colors, gradients, images, patterns\n- **TEXT**: Rich text with fonts, stroke, shadows, gradients\n- **SHAPE**: Rectangles, circles, custom SVG paths\n- **ICON**: SVG icons with dynamic coloring\n- **IMAGE**: Raster images with crop, filters, transformations\n\n## Blend Modes\nnormal, multiply, screen, overlay, darken, lighten, color-burn, color-dodge, difference, exclusion, hue, saturation, color, luminosity, soft-light, hard-light\n\n## Asset Kinds\n- **raster**: PNG, JPEG, WebP images\n- **vector**: SVG files\n- **font**: Font files (TTF, WOFF2)\n- **pattern**: Pattern/texture images",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "patch": 0
+    }
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "logoId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "layerId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "assetId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "templateId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "550e8400-e29b-41d4-a716-446655440000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health Check",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/../health",
+              "host": ["{{baseUrl}}", "..", "health"]
+            },
+            "description": "Check if the API server is running and healthy."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/../health",
+                  "host": ["{{baseUrl}}", "..", "health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"healthy\",\n  \"uptime\": 123.45,\n  \"timestamp\": \"2025-09-25T02:30:32.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "🎨 Logo Management",
+      "item": [
+        {
+          "name": "Create Logo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"owner_id\": \"{{userId}}\",\n  \"title\": \"My Gaming Logo\",\n  \"canvas_w\": 1080,\n  \"canvas_h\": 1080,\n  \"dpi\": 300,\n  \"category_id\": null,\n  \"is_template\": false,\n  \"layers\": [\n    {\n      \"type\": \"BACKGROUND\",\n      \"name\": \"Background\",\n      \"z_index\": 0,\n      \"x_norm\": 0,\n      \"y_norm\": 0,\n      \"scale\": 1,\n      \"rotation_deg\": 0,\n      \"anchor_x\": 0.5,\n      \"anchor_y\": 0.5,\n      \"opacity\": 1,\n      \"blend_mode\": \"normal\",\n      \"is_visible\": true,\n      \"is_locked\": false,\n      \"background\": {\n        \"mode\": \"gradient\",\n        \"gradient\": {\n          \"type\": \"linear\",\n          \"angle\": 45,\n          \"stops\": [\n            {\"offset\": 0, \"hex\": \"#FF6B6B\", \"alpha\": 1},\n            {\"offset\": 1, \"hex\": \"#4ECDC4\", \"alpha\": 1}\n          ]\n        }\n      }\n    },\n    {\n      \"type\": \"TEXT\",\n      \"name\": \"Title\",\n      \"z_index\": 10,\n      \"x_norm\": 0.5,\n      \"y_norm\": 0.7,\n      \"scale\": 1,\n      \"rotation_deg\": 0,\n      \"anchor_x\": 0.5,\n      \"anchor_y\": 0.5,\n      \"opacity\": 1,\n      \"blend_mode\": \"normal\",\n      \"is_visible\": true,\n      \"is_locked\": false,\n      \"text\": {\n        \"content\": \"GAMING HUNTER\",\n        \"font_id\": null,\n        \"font_size\": 64,\n        \"line_height\": 1.2,\n        \"letter_spacing\": 2,\n        \"align\": \"center\",\n        \"baseline\": \"alphabetic\",\n        \"fill_hex\": \"#FFFFFF\",\n        \"fill_alpha\": 1,\n        \"stroke_hex\": \"#000000\",\n        \"stroke_alpha\": 1,\n        \"stroke_width\": 4,\n        \"stroke_align\": \"outside\"\n      }\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logo",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo"]
+            },
+            "description": "Create a new logo with layers. This endpoint creates a complete logo with all layer types supported."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('logoId', response.data.id);",
+                  "    console.log('Logo created with ID:', response.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"owner_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"title\": \"My Gaming Logo\",\n  \"canvas_w\": 1080,\n  \"canvas_h\": 1080,\n  \"layers\": []\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/logo",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["logo"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"owner_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"title\": \"My Gaming Logo\",\n    \"canvas_w\": 1080,\n    \"canvas_h\": 1080,\n    \"dpi\": 300,\n    \"thumbnail_url\": null,\n    \"is_template\": false,\n    \"category_id\": null,\n    \"created_at\": \"2025-09-25T02:30:32.000Z\",\n    \"updated_at\": \"2025-09-25T02:30:32.000Z\",\n    \"layers\": []\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Logo",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}"]
+            },
+            "description": "Get a logo by ID with all layers and their properties."
+          },
+          "response": [
+            {
+              "name": "Success",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/logo/123e4567-e89b-12d3-a456-426614174000",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["logo", "123e4567-e89b-12d3-a456-426614174000"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": \"123e4567-e89b-12d3-a456-426614174000\",\n    \"owner_id\": \"550e8400-e29b-41d4-a716-446655440000\",\n    \"title\": \"My Gaming Logo\",\n    \"canvas_w\": 1080,\n    \"canvas_h\": 1080,\n    \"dpi\": 300,\n    \"thumbnail_url\": null,\n    \"is_template\": false,\n    \"category_id\": null,\n    \"created_at\": \"2025-09-25T02:30:32.000Z\",\n    \"updated_at\": \"2025-09-25T02:30:32.000Z\",\n    \"layers\": [\n      {\n        \"id\": \"layer-123\",\n        \"logo_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n        \"type\": \"BACKGROUND\",\n        \"name\": \"Background\",\n        \"z_index\": 0,\n        \"x_norm\": 0,\n        \"y_norm\": 0,\n        \"scale\": 1,\n        \"rotation_deg\": 0,\n        \"anchor_x\": 0.5,\n        \"anchor_y\": 0.5,\n        \"opacity\": 1,\n        \"blend_mode\": \"normal\",\n        \"is_visible\": true,\n        \"is_locked\": false,\n        \"background\": {\n          \"mode\": \"gradient\",\n          \"gradient\": {\n            \"type\": \"linear\",\n            \"angle\": 45,\n            \"stops\": [\n              {\"offset\": 0, \"hex\": \"#FF6B6B\", \"alpha\": 1},\n              {\"offset\": 1, \"hex\": \"#4ECDC4\", \"alpha\": 1}\n            ]\n          }\n        }\n      }\n    ]\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Logo",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Gaming Logo\",\n  \"canvas_w\": 1920,\n  \"canvas_h\": 1080,\n  \"dpi\": 300\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}"]
+            },
+            "description": "Update logo properties like title, canvas dimensions, and DPI."
+          }
+        },
+        {
+          "name": "Delete Logo",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}"]
+            },
+            "description": "Delete a logo and all its layers permanently."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Layer Management",
+      "item": [
+        {
+          "name": "Get Layer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}"]
+            },
+            "description": "Get a layer by ID with all its properties and type-specific data."
+          }
+        },
+        {
+          "name": "Update Layer Common Properties",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"x_norm\": 0.6,\n  \"y_norm\": 0.4,\n  \"scale\": 1.2,\n  \"rotation_deg\": 15,\n  \"opacity\": 0.8,\n  \"is_visible\": true,\n  \"is_locked\": false,\n  \"common_style\": {\n    \"shadow\": {\n      \"dx\": 2,\n      \"dy\": 2,\n      \"blur\": 8,\n      \"hex\": \"#000000\",\n      \"alpha\": 0.3\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}"]
+            },
+            "description": "Update common layer properties like position, scale, rotation, opacity, and visibility."
+          }
+        },
+        {
+          "name": "Update Text Layer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"NEW TEXT\",\n  \"font_size\": 72,\n  \"fill_hex\": \"#FF0000\",\n  \"stroke_hex\": \"#FFFFFF\",\n  \"stroke_width\": 6,\n  \"align\": \"center\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}/text",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}", "text"]
+            },
+            "description": "Update text layer properties like content, font size, colors, and alignment."
+          }
+        },
+        {
+          "name": "Update Shape Layer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shape_kind\": \"rect\",\n  \"fill_hex\": \"#00FF00\",\n  \"fill_alpha\": 0.8,\n  \"stroke_hex\": \"#000000\",\n  \"stroke_width\": 3,\n  \"rx\": 15,\n  \"ry\": 15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}/shape",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}", "shape"]
+            },
+            "description": "Update shape layer properties like shape type, fill, stroke, and corner radius."
+          }
+        },
+        {
+          "name": "Update Icon Layer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_id\": \"{{assetId}}\",\n  \"tint_hex\": \"#FF0000\",\n  \"tint_alpha\": 0.9,\n  \"allow_recolor\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}/icon",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}", "icon"]
+            },
+            "description": "Update icon layer properties like asset reference, tint color, and recoloring options."
+          }
+        },
+        {
+          "name": "Update Image Layer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"asset_id\": \"{{assetId}}\",\n  \"crop\": {\"x\": 0, \"y\": 0, \"w\": 1, \"h\": 1},\n  \"fit\": \"contain\",\n  \"brightness\": 1.2,\n  \"contrast\": 1.1,\n  \"blur\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}/image",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}", "image"]
+            },
+            "description": "Update image layer properties like asset reference, crop, fit mode, and filters."
+          }
+        },
+        {
+          "name": "Update Background Layer",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"mode\": \"gradient\",\n  \"gradient\": {\n    \"type\": \"radial\",\n    \"stops\": [\n      {\"offset\": 0, \"hex\": \"#FF0000\", \"alpha\": 1},\n      {\"offset\": 1, \"hex\": \"#0000FF\", \"alpha\": 1}\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}/background",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}", "background"]
+            },
+            "description": "Update background layer properties like mode, colors, and gradients."
+          }
+        },
+        {
+          "name": "Reorder Layer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"z_index\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}/reorder",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}", "reorder"]
+            },
+            "description": "Change the z-index (layer order) of a layer within its logo."
+          }
+        },
+        {
+          "name": "Delete Layer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/layers/{{layerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["layers", "{{layerId}}"]
+            },
+            "description": "Delete a layer permanently."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📁 Asset Management",
+      "item": [
+        {
+          "name": "Get Assets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets?kind=vector&category=icons&search=arrow&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets"],
+              "query": [
+                {
+                  "key": "kind",
+                  "value": "vector",
+                  "description": "Filter by asset kind: raster, vector, font, pattern"
+                },
+                {
+                  "key": "category",
+                  "value": "icons",
+                  "description": "Filter by category"
+                },
+                {
+                  "key": "search",
+                  "value": "arrow",
+                  "description": "Search in name and tags"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number for pagination"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Number of items per page"
+                }
+              ]
+            },
+            "description": "Get all assets with filtering and pagination options."
+          }
+        },
+        {
+          "name": "Get Asset by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/{{assetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "{{assetId}}"]
+            },
+            "description": "Get a specific asset by ID with all its metadata."
+          }
+        },
+        {
+          "name": "Upload Asset",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": [],
+                  "description": "File to upload (PNG, JPEG, SVG, etc.)"
+                },
+                {
+                  "key": "kind",
+                  "value": "vector",
+                  "type": "text",
+                  "description": "Asset kind: raster, vector, font, pattern"
+                },
+                {
+                  "key": "name",
+                  "value": "Arrow Icon",
+                  "type": "text",
+                  "description": "Asset name"
+                },
+                {
+                  "key": "meta",
+                  "value": "{\"category\": \"icons\", \"tags\": [\"arrow\", \"direction\"]}",
+                  "type": "text",
+                  "description": "Metadata as JSON string"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "upload"]
+            },
+            "description": "Upload a file to Cloudinary and create an asset record."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('assetId', response.data.id);",
+                  "    console.log('Asset created with ID:', response.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Asset Record",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kind\": \"vector\",\n  \"name\": \"Custom Icon\",\n  \"storage\": \"cloudinary\",\n  \"url\": \"https://res.cloudinary.com/example/image/upload/v1234567890/icon.svg\",\n  \"provider_id\": \"icon\",\n  \"mime_type\": \"image/svg+xml\",\n  \"width\": 100,\n  \"height\": 100,\n  \"has_alpha\": true,\n  \"vector_svg\": \"<svg width=\\\"100\\\" height=\\\"100\\\" xmlns=\\\"http://www.w3.org/2000/svg\\\"><circle cx=\\\"50\\\" cy=\\\"50\\\" r=\\\"40\\\" fill=\\\"currentColor\\\"/></svg>\",\n  \"meta\": {\n    \"category\": \"icons\",\n    \"tags\": [\"circle\", \"simple\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets"]
+            },
+            "description": "Create an asset record for an already uploaded file."
+          }
+        },
+        {
+          "name": "Update Asset",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Icon Name\",\n  \"meta\": {\n    \"category\": \"business\",\n    \"tags\": [\"logo\", \"brand\", \"professional\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/assets/{{assetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "{{assetId}}"]
+            },
+            "description": "Update asset metadata like name, tags, and category."
+          }
+        },
+        {
+          "name": "Delete Asset",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/{{assetId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "{{assetId}}"]
+            },
+            "description": "Delete an asset from both database and Cloudinary."
+          }
+        },
+        {
+          "name": "Get Asset Download URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/assets/{{assetId}}/download",
+              "host": ["{{baseUrl}}"],
+              "path": ["assets", "{{assetId}}", "download"]
+            },
+            "description": "Get a signed download URL for private assets."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Template Management",
+      "item": [
+        {
+          "name": "Get Templates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates?category_id=uuid&search=gaming&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates"],
+              "query": [
+                {
+                  "key": "category_id",
+                  "value": "uuid",
+                  "description": "Filter by category ID"
+                },
+                {
+                  "key": "search",
+                  "value": "gaming",
+                  "description": "Search in title and description"
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "Get all templates with filtering and pagination."
+          }
+        },
+        {
+          "name": "Get Template by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates/{{templateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "{{templateId}}"]
+            },
+            "description": "Get a specific template by ID with all its details."
+          }
+        },
+        {
+          "name": "Create Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Gaming Logo Template\",\n  \"description\": \"Template for gaming logos with modern design\",\n  \"category_id\": null,\n  \"base_logo_id\": \"{{logoId}}\",\n  \"preview_url\": \"https://res.cloudinary.com/example/image/upload/v1234567890/preview.png\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/templates",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates"]
+            },
+            "description": "Create a new template from an existing logo."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('templateId', response.data.id);",
+                  "    console.log('Template created with ID:', response.data.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Use Template",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"owner_id\": \"{{userId}}\",\n  \"title\": \"My Gaming Logo from Template\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/templates/{{templateId}}/use",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "{{templateId}}", "use"]
+            },
+            "description": "Create a new logo from a template by copying all layers."
+          }
+        },
+        {
+          "name": "Update Template",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Gaming Template\",\n  \"description\": \"Updated description for gaming template\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/templates/{{templateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "{{templateId}}"]
+            },
+            "description": "Update template properties like title and description."
+          }
+        },
+        {
+          "name": "Delete Template",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates/{{templateId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "{{templateId}}"]
+            },
+            "description": "Delete a template permanently."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📂 Categories",
+      "item": [
+        {
+          "name": "Get Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "categories"]
+            },
+            "description": "Get all template categories."
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gaming\",\n  \"description\": \"Gaming-related templates and assets\",\n  \"icon_asset_id\": \"{{assetId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/templates/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "categories"]
+            },
+            "description": "Create a new template category."
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gaming & Esports\",\n  \"description\": \"Gaming and esports templates and assets\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/templates/categories/uuid",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "categories", "uuid"]
+            },
+            "description": "Update category properties."
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/templates/categories/uuid",
+              "host": ["{{baseUrl}}"],
+              "path": ["templates", "categories", "uuid"]
+            },
+            "description": "Delete a category permanently."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📤 Export & Rendering",
+      "item": [
+        {
+          "name": "Export as PNG",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}/export.png?width=1920&height=1080&dpi=300&quality=95",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}", "export.png"],
+              "query": [
+                {
+                  "key": "width",
+                  "value": "1920",
+                  "description": "Output width in pixels"
+                },
+                {
+                  "key": "height",
+                  "value": "1080",
+                  "description": "Output height in pixels"
+                },
+                {
+                  "key": "dpi",
+                  "value": "300",
+                  "description": "DPI for print quality"
+                },
+                {
+                  "key": "quality",
+                  "value": "95",
+                  "description": "JPEG quality (1-100)"
+                }
+              ]
+            },
+            "description": "Export logo as PNG with customizable dimensions and quality."
+          }
+        },
+        {
+          "name": "Export as SVG",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}/export.svg?width=1920&height=1080",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}", "export.svg"],
+              "query": [
+                {
+                  "key": "width",
+                  "value": "1920",
+                  "description": "Output width in pixels"
+                },
+                {
+                  "key": "height",
+                  "value": "1080",
+                  "description": "Output height in pixels"
+                }
+              ]
+            },
+            "description": "Export logo as SVG with customizable dimensions."
+          }
+        },
+        {
+          "name": "Generate Thumbnail",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}/thumbnail?width=300&height=300",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}", "thumbnail"],
+              "query": [
+                {
+                  "key": "width",
+                  "value": "300",
+                  "description": "Thumbnail width"
+                },
+                {
+                  "key": "height",
+                  "value": "300",
+                  "description": "Thumbnail height"
+                }
+              ]
+            },
+            "description": "Generate a thumbnail image for the logo."
+          }
+        }
+      ]
+    },
+    {
+      "name": "📚 Version Control",
+      "item": [
+        {
+          "name": "Create Version",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Added new text layer and updated background\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}/version",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}", "version"]
+            },
+            "description": "Create a version snapshot of the current logo state."
+          }
+        },
+        {
+          "name": "Get Versions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logo/{{logoId}}/versions?page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["logo", "{{logoId}}", "versions"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "20",
+                  "description": "Items per page"
+                }
+              ]
+            },
+            "description": "Get all versions of a logo with pagination."
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔧 Legacy Endpoints",
+      "item": [
+        {
+          "name": "Get All Logos (Legacy)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/logos",
+              "host": ["{{baseUrl}}"],
+              "path": ["logos"]
+            },
+            "description": "Legacy endpoint for getting all logos (use /logo instead)."
+          }
+        },
+        {
+          "name": "Create Logo (Legacy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Legacy Logo\",\n  \"url\": \"https://example.com/logo.png\",\n  \"coordinates\": {\n    \"x\": 100,\n    \"y\": 100\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/logos",
+              "host": ["{{baseUrl}}"],
+              "path": ["logos"]
+            },
+            "description": "Legacy endpoint for creating logos (use /logo instead)."
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set default values if not already set",
+          "if (!pm.collectionVariables.get('baseUrl')) {",
+          "    pm.collectionVariables.set('baseUrl', 'http://localhost:3000/api');",
+          "}",
+          "if (!pm.collectionVariables.get('userId')) {",
+          "    pm.collectionVariables.set('userId', '550e8400-e29b-41d4-a716-446655440000');",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script for all requests",
+          "pm.test('Response time is less than 5000ms', function () {",
+          "    pm.expect(pm.response.responseTime).to.be.below(5000);",
+          "});",
+          "",
+          "pm.test('Response has success field', function () {",
+          "    if (pm.response.code === 200 || pm.response.code === 201) {",
+          "        const jsonData = pm.response.json();",
+          "        pm.expect(jsonData).to.have.property('success');",
+          "    }",
+          "});"
+        ]
+      }
+    }
+  ]
+}

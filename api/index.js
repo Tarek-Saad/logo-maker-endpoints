@@ -41,6 +41,10 @@ app.use('/api/posts', require('./routes/posts'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/logos', require('./routes/logos'));
 app.use('/api/logo', require('./routes/logo'));
+app.use('/api/assets', require('./routes/assets'));
+app.use('/api/layers', require('./routes/layers'));
+app.use('/api/templates', require('./routes/templates'));
+app.use('/api', require('./routes/export'));
 
 // 404 handler
 app.use('*', (req, res) => {
